@@ -48,12 +48,26 @@ codes = set()
 
 for call in calls:
   if call[0].startswith("(080)"):
-    codes.add(call[1])
+    # starts with (, then get what is between ()
+    if call[1].startswith("("):
+      codes.add(call[1][1:call[1].find(')')])
+    # starts with 140 then add 140 to the list
+    elif call[1].startswith('7') or call[1].startswith('8') or call[1].startswith('9'):
+      codes.add(call[1][0:5])
+    # starts with 7,8, or 9, then get first 4 numbers.
+    else:
+      codes.add(call[1][1:4])
     
 print("The numbers called by people in Bangalore have codes:")
-print(list(codes))
+sorted_codes = sorted(list(codes))
+for code in sorted_codes:
+  print(code)
   
-filtered_codes = list(filter(lambda x: x.startswith("(080)"), codes))
-percentage = len(filtered_codes)/len(codes) * 100
+calling, receiving = 0, 0
+for call in calls:
+  if call[0].startswith("(080)"):
+    calling += 1
+    if call[1].startswith("(080)"):
+      receiving += 1
 
-print(f"\n{round(percentage, 2)} percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore.")
+print(f"\n{round(receiving/calling, 2)} percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore.")
